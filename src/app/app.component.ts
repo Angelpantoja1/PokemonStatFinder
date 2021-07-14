@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
+import { Ipoke } from './ipoke';
 
 @Component({
   selector: 'app-root',
@@ -6,164 +8,121 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-  title = 'PokemonStatFinder';
-  url = "https://pokeapi.co/api/v2/pokemon?offset=200&limit=1118";
-  gen1: any[] = []
-  gen2: any[] = []
-  gen3: any[] = []
-  gen4: any[] = []
-  gen5: any[] = []
-  gen6: any[] = []
-  gen7: any[] = []
-  gen8: any[] = []
-  gen11: any[] = []
-  gen22: any[] = []
-  gen33: any[] = []
-  gen44: any[] = []
-  gen55: any[] = []
-  gen66: any[] = []
-  gen77: any[] = []
-  gen88: any[] = []
-  pokemon: any[] = []
-  ngOnInit() {
+  title = "";
+  closeResult = "";
+  pokeMon: Ipoke[] = [];
+  OfficialDex: Ipoke[] = [];
+  caught = 0;
+  seen = 0;
+  monOBJ: Ipoke = {
+    pokedexNum: "",
+    name: "",
+    modalName: "",
+    type: "",
+    location: "",
+    evolution: "",
+    img: "",
+    caught: "",
+    seen: "",
+    baseStats:""
+  }
 
-    fetch(this.url)
+  constructor(private modalService: NgbModal) { }
+
+  ngOnInit() {
+    fetch("https://spreadsheets.google.com/feeds/list/1CmATP39mPrkEne6aPtip-QeytH_FGC6n2sFC8bYyUH0/2/public/full?alt=json")
       .then(response => response.json())
       .then(data => {
-        for (let i = 0; i < data.results.length; i++) {
-          fetch(data.results[i].url)
-            .then(r => r.json())
-            .then(d => {
-              this.pokemon.push(d)
-            })
+        let pokeentry = data.feed.entry
+        console.log(pokeentry);
+        for (let i = 2; i < pokeentry.length; i++) {
+          let pokeOBJ = {
+            pokedexNum: `${pokeentry[i].gsx$galar.$t}`,
+            name: `Name: ${pokeentry[i].gsx$name.$t}`,
+            modalName: pokeentry[i].gsx$name.$t,
+            type: `Type: ${pokeentry[i].gsx$type.$t}`,
+            location: `Location: ${pokeentry[i].gsx$location.$t}`,
+            evolution: `Evolution: ${pokeentry[i].gsx$evolution.$t}`,
+            img: `${pokeentry[i].gsx$img.$t.toLowerCase()}`,
+            caught: pokeentry[i].gsx$caught_2.$t,
+            seen: pokeentry[i].gsx$seen.$t,
+            baseStats:pokeentry[i].gsx$basestats.$t
+          }
+          pokeOBJ.seen != "" ? this.seen++ : this.seen;
+          pokeOBJ.caught != "" ? this.caught++ : this.caught
+          this.pokeMon.push(pokeOBJ);
+          this.OfficialDex.push(pokeOBJ);
         }
       })
+  }
+  fiterCaught() {
+    this.pokeMon = this.OfficialDex.filter(x => x.caught != "");
+  }
+  filterSeen() {
+    this.pokeMon = this.OfficialDex.filter(x => x.seen != "");
+    console.log("Seen");
+  }
+  defaultMon() {
+    this.pokeMon = this.OfficialDex;
+  }
+  open(content: any, i: number) {
+    this.modalService.open(content, { ariaLabelledBy: 'modal-basic-title' }).result.then((result) => {
+      this.closeResult = `Closed with: ${result}`;
+    }, (reason) => {
+      this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
+    });
+    let mon = this.pokeMon[i];
+    this.monOBJ = {
+      pokedexNum: mon.pokedexNum,
+      name: mon.name,
+      modalName: mon.modalName,
+      type: mon.type,
+      location: mon.location,
+      evolution: mon.evolution,
+      img: mon.img,
+      caught: mon.caught,
+      seen: mon.seen,
+      baseStats: mon.baseStats
+    }
+    console.log(this.pokeMon[i])
+  }
 
-    setTimeout(() => {
+  filterSearch(e: any) {
+    this.pokeMon = [];
+    if (e.keyCode == 13) {
+      console.log(e.target.value);
+      for (let i = 0; i < this.OfficialDex.length; i++) {
+        console.log(i)
+        console.log(this.OfficialDex[i].modalName.toLowerCase() === e.target.value.toLowerCase())
+        if (this.OfficialDex[i].modalName.toLowerCase() === e.target.value.toLowerCase()) {
+          this.pokeMon.push(this.OfficialDex[i])
+        }
 
-
-      fetch("https://pokeapi.co/api/v2/generation/1/")
-        .then(response => response.json())
-        .then(data => {
-          for (let i = 0; i < data.pokemon_species.length; i++) {
-            fetch(data.pokemon_species[i].url)
-              .then(r => r.json())
-              .then(d => {
-                fetch(d.varieties[0].pokemon["url"])
-                  .then(re => re.json())
-                  .then(da => {
-                    this.gen1.push(da);
-                  })
-              })
-          }
+      }
+      if (this.pokeMon.length < 1) {
+        this.pokeMon.push({
+          pokedexNum: "",
+          name: "Pokemon Not Found",
+          modalName: "Pokemon Not Found",
+          type: "",
+          location: "",
+          evolution: "",
+          img: "",
+          caught: "",
+          seen: "",
+          baseStats:""
         })
-      fetch("https://pokeapi.co/api/v2/generation/2/")
-        .then(response => response.json())
-        .then(data => {
-          for (let i = 0; i < data.pokemon_species.length; i++) {
-            fetch(data.pokemon_species[i].url)
-              .then(r => r.json())
-              .then(d => {
-                fetch(d.varieties[0].pokemon["url"])
-                  .then(re => re.json())
-                  .then(da => {
-                    this.gen2.push(da);
-                  })
-              })
-          }
-        })
-      fetch("https://pokeapi.co/api/v2/generation/3/")
-        .then(response => response.json())
-        .then(data => {
-          for (let i = 0; i < data.pokemon_species.length; i++) {
-            fetch(data.pokemon_species[i].url)
-              .then(r => r.json())
-              .then(d => {
-                fetch(d.varieties[0].pokemon["url"])
-                  .then(re => re.json())
-                  .then(da => {
-                    this.gen3.push(da);
-                  })
-              })
-          }
-        })
-      fetch("https://pokeapi.co/api/v2/generation/4/")
-        .then(response => response.json())
-        .then(data => {
-          for (let i = 0; i < data.pokemon_species.length; i++) {
-            fetch(data.pokemon_species[i].url)
-              .then(r => r.json())
-              .then(d => {
-                fetch(d.varieties[0].pokemon["url"])
-                  .then(re => re.json())
-                  .then(da => {
-                    this.gen4.push(da);
-                  })
-              })
-          }
-        })
-      fetch("https://pokeapi.co/api/v2/generation/5/")
-        .then(response => response.json())
-        .then(data => {
-          for (let i = 0; i < data.pokemon_species.length; i++) {
-            fetch(data.pokemon_species[i].url)
-              .then(r => r.json())
-              .then(d => {
-                fetch(d.varieties[0].pokemon["url"])
-                  .then(re => re.json())
-                  .then(da => {
-                    this.gen5.push(da);
-                  })
-              })
-          }
-        })
-      fetch("https://pokeapi.co/api/v2/generation/6/")
-        .then(response => response.json())
-        .then(data => {
-          for (let i = 0; i < data.pokemon_species.length; i++) {
-            fetch(data.pokemon_species[i].url)
-              .then(r => r.json())
-              .then(d => {
-                fetch(d.varieties[0].pokemon["url"])
-                  .then(re => re.json())
-                  .then(da => {
-                    this.gen6.push(da);
-                  })
-              })
-          }
-        })
-      fetch("https://pokeapi.co/api/v2/generation/7/")
-        .then(response => response.json())
-        .then(data => {
-          for (let i = 0; i < data.pokemon_species.length; i++) {
-            fetch(data.pokemon_species[i].url)
-              .then(r => r.json())
-              .then(d => {
-                fetch(d.varieties[0].pokemon["url"])
-                  .then(re => re.json())
-                  .then(da => {
-                    this.gen7.push(da);
-                    console.log(this.gen7)
-                  })
-              })
-          }
-        })
-      fetch("https://pokeapi.co/api/v2/generation/8/")
-        .then(response => response.json())
-        .then(data => {
-          for (let i = 0; i < data.pokemon_species.length; i++) {
-            fetch(data.pokemon_species[i].url)
-              .then(r => r.json())
-              .then(d => {
-                fetch(d.varieties[0].pokemon["url"])
-                  .then(re => re.json())
-                  .then(da => {
-                    this.gen8.push(da);
-                    console.log(this.gen8)
-                  })
-              })
-          }
-        })
-    }, 1000);
+      }
+      console.log(this.pokeMon);
+    }
+  }
+  private getDismissReason(reason: any): string {
+    if (reason === ModalDismissReasons.ESC) {
+      return 'by pressing ESC';
+    } else if (reason === ModalDismissReasons.BACKDROP_CLICK) {
+      return 'by clicking on a backdrop';
+    } else {
+      return `with: ${reason}`;
+    }
   }
 }

@@ -1,80 +1,69 @@
 <div class="container">
-  <div class="row">
+  <div class="row pb-5">
     <div class="col-lg-12 d-flex justify-content-end">
-      <img src="../assets/download.jpeg" alt="">
+      <button class="btn" (click)="defaultMon()"><img src="../assets/download.jpeg" alt=""></button>
     </div>
-    
-  </div>
-  <div class="row bl">
-    <div class="col-lg-12">
-      <a href="https://fontmeme.com/pokemon-font/"><img src="https://fontmeme.com/permalink/210704/af3cc1e7e460b46b3f18df8f344ef3f5.png" alt="pokemon-font" border="0"></a>
+    <div class="col-2">
+      <button class="btn" (click)="fiterCaught()"><img
+          src="https://fontmeme.com/permalink/210712/8dd34089917cacc83e480447fdeab783.png" alt="pokemon-font"
+          border="0"></button>
+      <h1>{{caught}}</h1>
     </div>
-    <div class="col-2" *ngFor="let p of gen1">
-      <img src={{p.sprites.front_default}} alt="">
-      <p>{{p.name}}</p>
+    <div class="col-2">
+      <button class="btn" (click)="filterSeen()"><img
+          src="https://fontmeme.com/permalink/210712/dde7a20dc647932a1e6ed98c0801904a.png" alt="pokemon-font"
+          border="0"></button>
+      <h1>{{seen}}</h1>
     </div>
-  </div>
-  <div class="row bl">
-    <div class="col-lg-12">
-      <a href="https://fontmeme.com/pokemon-font/"><img src="https://fontmeme.com/permalink/210704/92807452bb91e9f9971182699d28d3ab.png" alt="pokemon-font" border="0"></a>
+    <div class="col-1">
+      <p class="d-flex justify-content-end">Search</p>
     </div>
-    <div class="col-2" *ngFor="let p of gen2">
-      <img src={{p.sprites.front_default}} alt="">
-      <p>{{p.name}}</p>
-    </div>
-  </div>
-  <div class="row bl">
-    <div class="col-lg-12">
-      <a href="https://fontmeme.com/pokemon-font/"><img src="https://fontmeme.com/permalink/210704/995406263a1e3b70ee6ea5e90c00b4ab.png" alt="pokemon-font" border="0"></a>
-    </div>
-    <div class="col-2" *ngFor="let p of gen3">
-      <img src={{p.sprites.front_default}} alt="">
-      <p>{{p.name}}</p>
+    <div class="col-1">
+      <input type="text" (keypress)="filterSearch($event)">
     </div>
   </div>
-  <div class="row bl">
-    <div class="col-lg-12">
-      <a href="https://fontmeme.com/pokemon-font/"><img src="https://fontmeme.com/permalink/210704/d2102481fe74db67ad00901420f32cd2.png" alt="pokemon-font" border="0"></a>
-    </div>
-    <div class="col-2" *ngFor="let p of gen4">
-      <img src={{p.sprites.front_default}} alt="">
-      <p>{{p.name}}</p>
-    </div>
-  </div>
-  <div class="row bl">
-    <div class="col-lg-12">
-      <a href="https://fontmeme.com/pokemon-font/"><img src="https://fontmeme.com/permalink/210704/6c141d30425f8b46264136ebf836a5b7.png" alt="pokemon-font" border="0"></a>
-    </div>
-    <div class="col-2" *ngFor="let p of gen5">
-      <img src={{p.sprites.front_default}} alt="">
-      <p>{{p.name}}</p>
+</div>
+<div class="row">
+  <div class="col-12">
+    <div class="container">
+      <div class="row">
+        <div class="col-2" *ngFor="let p of pokeMon; let i = index;" (click)="open(content, i)">
+          <p>{{p.modalName}}</p>
+        </div>
+      </div>
     </div>
   </div>
-  <div class="row bl">
-    <div class="col-lg-12">
-      <a href="https://fontmeme.com/pokemon-font/"><img src="https://fontmeme.com/permalink/210704/5806f6b9524d613b438ab5d560fc5d30.png" alt="pokemon-font" border="0"></a>
+
+  <ng-template #content let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title pr-5">{{monOBJ.pokedexNum}}/400</h4>
+      <h4 class="modal-title" id="modal-basic-title">{{monOBJ.modalName}}</h4>
+      <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+        <span aria-hidden="true">&times;</span>
+      </button>
     </div>
-    <div class="col-2" *ngFor="let p of gen6">
-      <img src={{p.sprites.front_default}} alt="">
-      <p>{{p.name}}</p>
+    <div class="modal-body">
+      <div class="row">
+        <div class="col-5">
+          <img src={{monOBJ.img}} alt="" width="100%">
+        </div>
+        <div class="col-5">
+          <p>{{monOBJ.type}}</p>
+          <p>{{monOBJ.evolution}}</p>
+          <p>{{monOBJ.location}}</p>
+          <div [innerHTML]="monOBJ.baseStats"></div>
+        </div>
+      </div>
     </div>
-  </div>
-  <div class="row bl">
-    <div class="col-lg-12">
-      <a href="https://fontmeme.com/pokemon-font/"><img src="https://fontmeme.com/permalink/210704/a99301e26a12ec9ac2bd5a804a565f07.png" alt="pokemon-font" border="0"></a>
+    <div class="modal-footer  d-flex justify-content-center">
+      <div class="row">
+        <div class="col-6">
+          <button type="button" class="btn btn-outline-dark">Caught</button>
+        </div>
+        <div class="col-6">
+          <button type="button" class="btn btn-outline-dark">Seen</button>
+        </div>
+      </div>
     </div>
-    <div class="col-2" *ngFor="let p of gen7">
-      <img src={{p.sprites.front_default}} alt="">
-      <p>{{p.name}}</p>
-    </div>
-  </div>
-  <div class="row bl">
-    <div class="col-lg-12">
-      <a href="https://fontmeme.com/pokemon-font/"><img src="https://fontmeme.com/permalink/210704/cf4c8907e9a5b25ee6948bad3c2bfe47.png" alt="pokemon-font" border="0"></a>
-    </div>
-    <div class="col-2" *ngFor="let p of gen8">
-      <img src={{p.sprites.front_default}} alt="">
-      <p>{{p.name}}</p>
-    </div>
-  </div>
+  </ng-template>
 </div>
